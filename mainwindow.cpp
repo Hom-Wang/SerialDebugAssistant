@@ -1,12 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "serialScope.h"
+#include "serialscope.h"
+#include "viewer3d.h"
 
 #include <QSerialPort>
 #include <QSerialPortInfo>
 #include <QKeyEvent>
-
-//#pragma execution_character_set("UTF-8")
 
 int recvCount = 0;
 int sendCount = 0;
@@ -16,25 +15,12 @@ QStringList portList;
 QList<QAction *> pActionPort;
 QActionGroup *pActionGroupPort;
 
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+MainWindow::MainWindow( QWidget *parent ) :  QMainWindow( parent ),  ui( new Ui::MainWindow )
 {
     ui->setupUi(this);
-    this->initWindow();
-}
-
-MainWindow::~MainWindow()
-{
-    delete ui;
-    serial->close();
-}
-
-void MainWindow::initWindow()
-{
     ui->statusBar->showMessage("  serial port not open ...");
 
-    // Find available port
+    // find available port
     QList<int>  portNumber;
     QStringList portDisplayName;
     foreach(const QSerialPortInfo &info, QSerialPortInfo::availablePorts()) {
@@ -52,6 +38,7 @@ void MainWindow::initWindow()
         }
     }
 
+    // add port to menuSerial_Port
     pActionGroupPort = new QActionGroup(this);
     for(int i = 0; i < portList.size(); i++) {
         pActionPort += new QAction(portDisplayName[i], pActionGroupPort);
@@ -59,7 +46,7 @@ void MainWindow::initWindow()
     }
     ui->menuSerial_Port->addActions(pActionPort);
 
-    // set menuBoud_Rate
+    // add baudrate to menuBoud_Rate
     QList<QAction *> pActionBaud;
     QActionGroup *pActionGroupBaud = new QActionGroup(this);
     QStringList baudRateList;
@@ -71,7 +58,7 @@ void MainWindow::initWindow()
     pActionBaud[4]->setChecked(true);
     ui->menuBoud_Rate->addActions(pActionBaud);
 
-    // default setting
+    // default serial setting
     serial = new QSerialPort(this);
     serial->setBaudRate(QSerialPort::Baud115200);
     serial->setDataBits(QSerialPort::Data8);
@@ -84,10 +71,16 @@ void MainWindow::initWindow()
     connect(pActionGroupPort, SIGNAL(triggered(QAction*)), SLOT(onPortNameChanged(QAction*)));
     connect(pActionGroupBaud, SIGNAL(triggered(QAction*)), SLOT(onBaudRateChanged(QAction*)));
     connect(ui->actSerial_Scope, SIGNAL(triggered()), SLOT(callSerialScope()));
-    connect(ui->actCube_Viewer,  SIGNAL(triggered()), SLOT(callCubeViewer()));
+    connect(ui->actViewer_3D,    SIGNAL(triggered()), SLOT(callViewer3D()));
     connect(ui->actFile_Sender,  SIGNAL(triggered()), SLOT(callFileSender()));
     connect(ui->actReflash_List, SIGNAL(triggered()), this, SLOT(reflashPortList()));
     connect(ui->pushButton_Send, SIGNAL(clicked()), this, SLOT(onPushButton_Send_clicked()));
+}
+
+MainWindow::~MainWindow()
+{
+    serial->close();
+    delete ui;
 }
 
 void MainWindow::reflashPortList()
@@ -157,7 +150,6 @@ void MainWindow::closeSerialPort( void )
 
 void MainWindow::serialRecv()
 {
-    QString debug_info;
     static QByteArray recvBuf;
 
     if(serial->isOpen()) {
@@ -175,16 +167,7 @@ void MainWindow::serialRecv()
                     QByteArray packet = recvBuf.mid(indexFirst, packetLens);
                     uint8_t *data = (uint8_t*)packet.data();
                     if((data[0] == 'S') && (data[packetLens - 2] == '\r') && (data[packetLens - 1] == '\n')) {
-                        if(true) {  // check checksum
-                            SerialScope.updateSignal(data + 2, type, nByte);
-                            debug_info += "signal = ";
-                            debug_info += QString::number(SerialScope.signal[0]);
-                            debug_info += "\t";
-                            debug_info += QString::number(SerialScope.signal[1]);
-                            debug_info += "\t";
-                            debug_info += QString::number(recvBuf.size());
-                            debug_info += "\n";
-                        }
+                        SerialScope.updateSignal(data + 2, type, nByte);
                     }
                     recvBuf.remove(0, indexFirst + packetLens - 1);
                 }
@@ -196,9 +179,6 @@ void MainWindow::serialRecv()
                 break;
             }
         } while(true);
-
-        ui->textBrowser_Recv->insertPlainText(debug_info);
-        ui->textBrowser_Recv->moveCursor(QTextCursor::End);
     }
 }
 
@@ -244,6 +224,7 @@ void MainWindow::callSerialScope()
 {
     if(ui->actSerial_Scope->isChecked() == true) {
         SerialScope.show();
+//        SerialScope.start();
     }
     else {
         SerialScope.close();
@@ -251,13 +232,13 @@ void MainWindow::callSerialScope()
     }
 }
 
-void MainWindow::callCubeViewer()
+void MainWindow::callViewer3D()
 {
-    if(ui->actCube_Viewer->isChecked() == true) {
-        CubeViewer.show();
+    if(ui->actViewer_3D->isChecked() == true) {
+        Viewer3D.show();
     }
     else {
-        CubeViewer.close();
+        Viewer3D.close();
 //        delete CubeViewer;
     }
 }

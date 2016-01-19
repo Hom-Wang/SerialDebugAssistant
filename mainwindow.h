@@ -1,8 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "serialScope.h"
-#include "cubeViewer.h"
+#include "serialscope.h"
+#include "viewer3d.h"
 
 #include <QMainWindow>
 #include <QKeyEvent>
@@ -16,15 +16,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    SerialScope SerialScope;
-    CubeViewer CubeViewer;
     explicit MainWindow( QWidget *parent = 0 );
     ~MainWindow();
 
+    SerialScope SerialScope;
+    Viewer3D Viewer3D;
     void addTextBrowserInfo( const QString info );
 
 private slots:
-    void initWindow();
     void serialRecv();
     void reflashPortList();
     void onPortNameChanged( QAction *action );
@@ -36,7 +35,7 @@ private slots:
     void keyPressEvent( QKeyEvent* e );
 
     void callSerialScope();
-    void callCubeViewer();
+    void callViewer3D();
     void callFileSender();
 
 private:

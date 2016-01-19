@@ -172,7 +172,7 @@ p, li { white-space: pre-wrap; }
      <string>Tool</string>
     </property>
     <addaction name="actSerial_Scope"/>
-    <addaction name="actCube_Viewer"/>
+    <addaction name="actViewer_3D"/>
     <addaction name="actFile_Sender"/>
    </widget>
    <addaction name="menuFile"/>
@@ -200,12 +200,15 @@ p, li { white-space: pre-wrap; }
     <string>Serial Scope</string>
    </property>
   </action>
-  <action name="actCube_Viewer">
+  <action name="actViewer_3D">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Cube Viewer</string>
+    <string>3D Viewer</string>
+   </property>
+   <property name="toolTip">
+    <string>3D Viewer</string>
    </property>
   </action>
   <action name="actFile_Sender">

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui serialport
+QT       += core gui serialport opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
@@ -14,15 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    qcustomplot.cpp \
-    serialScope.cpp \
-    cubeViewer.cpp
+        qcustomplot.cpp \
+        serialscope.cpp \
+        viewer3d.cpp \
+        kfile.cpp
 
-HEADERS  += mainwindow.h \
-    qcustomplot.h \
-    serialScope.h \
-    cubeViewer.h
+HEADERS += mainwindow.h \
+        qcustomplot.h \
+        viewer3d.h \
+        serialscope.h \
+        kfile.h
 
-FORMS    += mainwindow.ui \
-    serialscope.ui \
-    cubeViewer.ui
+FORMS   += mainwindow.ui \
+        serialscope.ui \
+        viewer3d.ui
