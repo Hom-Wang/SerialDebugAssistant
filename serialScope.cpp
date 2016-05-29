@@ -124,7 +124,7 @@ void SerialScope::updateCustomPlot()
 void SerialScope::saveSignal( void )
 {
     uint16_t *pSignalVect = NULL;
-    uint32_t sampleRate   = 250;
+    uint32_t sampleRate   = 100;
     uint64_t dataLens     = this->signalVect[0].count();
 
     KFile kFile("KitSprout.txt");

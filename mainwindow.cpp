@@ -50,7 +50,7 @@ MainWindow::MainWindow( QWidget *parent ) :  QMainWindow( parent ),  ui( new Ui:
     QList<QAction *> pActionBaud;
     QActionGroup *pActionGroupBaud = new QActionGroup(this);
     QStringList baudRateList;
-    baudRateList << "9600" << "19200" << "38400" << "57600" << "115200" << "460800" << "921600";
+    baudRateList << "9600" << "19200" << "38400" << "57600" << "115200" << "230400" << "460800" << "921600";
     for(int i = 0; i < baudRateList.size(); i++) {
         pActionBaud += new QAction(baudRateList[i], pActionGroupBaud);
         pActionBaud[i]->setCheckable(true);
