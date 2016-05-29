@@ -8,8 +8,8 @@
 static ptrSerial pSerialFunc = NULL;
 /*====================================================================================================*/
 /*====================================================================================================*
-**函數 : kSerial_calChecksum
-**功能 : Set Serial Function
+**函數 : kSerial_Config
+**功能 : Point to Serial Send Function
 **輸入 : None
 **輸出 : None
 **使用 : kSerial_Config(Serial_SendByte);
@@ -25,18 +25,17 @@ void kSerial_Config( ptrSerial pSerial )
 **功能 : kSerial Cal Checksum
 **輸入 : *data, dataLens
 **輸出 : None
-**使用 : kSerial_calChecksum(packet + 2, lens);;
+**使用 : kSerial_calChecksum(packet + 2, lens);
 **====================================================================================================*/
 /*====================================================================================================*/
-static uint16_t kSerial_calChecksum( uint8_t *data, const uint8_t dataLens )
+static uint16_t kSerial_calChecksum( uint8_t *data, const uint8_t lens )
 {
-  uint8_t count = 0;
   uint32_t checkSum = 0;
 
-  for(count = 0; count < dataLens; count++)
+  for(uint8_t count = 0; count < lens; count += 2)
     checkSum += (data[count] << 8) | (data[count + 1]);
 
-  return (uint16_t)((dataLens & 0x01) ? checkSum : checkSum ^ (uint32_t)data[count]);
+  return (uint16_t)(checkSum);
 }
 /*====================================================================================================*/
 /*====================================================================================================*
@@ -49,11 +48,13 @@ static uint16_t kSerial_calChecksum( uint8_t *data, const uint8_t dataLens )
 /*====================================================================================================*/
 void kSerial_sendData( void *signalData, uint8_t type, uint8_t lens )
 {
-  const uint8_t dataLens = lens << ((type & 0x60) >> 5);
-
   uint8_t packet[32] = {0};           // tmpData lens >= 2 * lens + 4
   uint8_t *pPacket = packet;
+
+  uint8_t convLens = (type & 0x60) >> 5;
+  uint8_t dataLens = lens << convLens;
   uint8_t packetLens = dataLens + 6;  // all packet bytes
+
   uint16_t checkSum = 0;
 
   packet[0] = 'S';                                      // 'S' - Signal
@@ -61,8 +62,8 @@ void kSerial_sendData( void *signalData, uint8_t type, uint8_t lens )
   for(uint8_t count = 0; count < dataLens; count++)     // data
     packet[count + 2] = ((uint8_t*)signalData)[count];
   checkSum = kSerial_calChecksum(packet + 2, lens);
-  packet[packetLens - 4] = Byte8H(checkSum);            // checksum H
-  packet[packetLens - 3] = Byte8L(checkSum);            // checksum L
+  packet[packetLens - 4] = (checkSum & 0xFF00) >> 8;    // checksum H
+  packet[packetLens - 3] = (checkSum & 0x00FF);         // checksum L
   packet[packetLens - 2] = '\r';                        // 'r'
   packet[packetLens - 1] = '\n';                        // 'n'
 
