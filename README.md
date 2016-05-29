@@ -27,4 +27,4 @@ Packet Format
 
 Release
 ========
-[Google drive](https://drive.google.com/folderview?id=0BzL2wwAot6oPWG1DWFNmN1Y5WlE&usp=sharing)
+[Google drive](https://drive.google.com/open?id=0BzL2wwAot6oPWG1DWFNmN1Y5WlE)
